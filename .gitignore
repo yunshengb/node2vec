@@ -12,7 +12,8 @@ build
 .project
 .settings
 .idea
-.npy
-.emb
+*.npy
+*.emb
 .emd
-emb/karate.emb
+*.edgelist
+*.pkl
