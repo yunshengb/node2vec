@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 def convert_embed_to_np(emb_file, np_file):
     print 'Convert %s to %s' % (emb_file, np_file)
@@ -14,6 +15,7 @@ def convert_embed_to_np(emb_file, np_file):
         li = [ float(x) for x in t[1:] ]
         mat[r-1] = li
     np.save(np_file, mat)
+
 
 def format_edgelist(edg_file):
     '''
@@ -44,3 +46,14 @@ def format_edgelist(edg_file):
            str_v = line.split()
            output = '%d\t%d\n' % (mapping[int(str_v[0])], mapping[int(str_v[1])])
            f.write(output)
+
+
+def convert_emb_to_pd(emb_file, pd_file):
+    print 'Convert %s to %s' % (emb_file, pd_file)
+    df = pd.read_table(emb_file, \
+        delim_whitespace=True, \
+        header=None, \
+        dtype=np.float64, \
+        index_col=0, \
+        skiprows=1)
+    df.to_pickle(pd_file)

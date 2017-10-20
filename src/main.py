@@ -33,16 +33,16 @@ def parse_args():
     parser.add_argument('--input_type', nargs='?', default='txt',
                         help='Input graph path. edgelist or graph or npy or txt.')
 
-    parser.add_argument('--dimensions', type=int, default=200,
-                        help='Number of dimensions. Default is 128.')
+    parser.add_argument('--dimensions', type=int, default=100,
+                        help='Number of dimensions. Default is 100.')
 
-    parser.add_argument('--walk-length', type=int, default=80,
-                        help='Length of walk per source. Default is 80.')
+    parser.add_argument('--walk-length', type=int, default=40,
+                        help='Length of walk per source. Default is 40.')
 
-    parser.add_argument('--num-walks', type=int, default=10,
-                        help='Number of walks per source. Default is 10.')
+    parser.add_argument('--num-walks', type=int, default=40,
+                        help='Number of walks per source. Default is 40.')
 
-    parser.add_argument('--window-size', type=int, default=1,
+    parser.add_argument('--window-size', type=int, default=10,
                         help='Context size for optimization. Default is 10.')
 
     parser.add_argument('--iter', default=1, type=int,
