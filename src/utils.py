@@ -13,7 +13,7 @@ def convert_embed_to_np(emb_file, np_file):
         t = line.rstrip().split()
         r = int(t[0])
         li = [ float(x) for x in t[1:] ]
-        mat[r-1] = li
+        mat[r] = li
     np.save(np_file, mat)
 
 
