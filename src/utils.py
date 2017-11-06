@@ -83,7 +83,7 @@ def precision(k, sim_scores, graph):
     Returns the precision at k given original graph.
     '''
 
-    n = len(graph)
+    n = len(sim_scores)
     # sort sim_scores along row axis and obtain indices
     np.fill_diagonal(sim_scores, 0)
     sorted_v = np.argsort(-sim_scores, axis=1)
