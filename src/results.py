@@ -6,6 +6,9 @@ from utils import similarity_scores, precision
 c = os.path.dirname(os.path.realpath(__file__))
 
 def parse_args():
+    '''
+    Parses arguments.
+    '''
     parser = argparse.ArgumentParser(description="Generate link predicition results.")
 
     parser.add_argument('--embedding', nargs='?', default='arxiv_cleaned',
@@ -21,6 +24,11 @@ def parse_args():
 
 
 def generate_results(args, ignore_last=False):
+    '''
+    Collects precision information on a given embedding
+    and original graph information.
+    '''
+
     emb = np.load('%s/../emb/%s.npy' % (c, args.embedding))
     if ignore_last:
         m = len(emb)-1

@@ -13,8 +13,9 @@ c = os.path.dirname(os.path.realpath(__file__))
 
 def read_graph(remove_self_loops=False):
     '''
-    Reads input and hides percent_hidden edges from each node.
-    Builds Graph from remaining edges in edgelist.
+    Reads input and builds graph. If the graph is not connected,
+    adds a magic node that connects all components
+    via the node with the highest degree.
     '''
     filename = '%s/../graph/%s.%s' % (c, args.input_name, args.input_type)
 
@@ -51,6 +52,10 @@ def read_graph(remove_self_loops=False):
     return G
 
 def graph_with_edges_hidden(G, percent_hidden):
+    '''
+    Given a graph, hides a percentage of edges per node
+    while maintaining a connected graph result.
+    '''
     span_tree_edges = set()
     for edge in nx.minimum_spanning_edges(G, data=False):
         span_tree_edges.add(edge)

@@ -78,37 +78,6 @@ def similarity_scores(emb, method):
         raise SystemExit
 
 
-def precision_predicted(k, sim_scores, hidden_links):
-    '''
-    Returns the precision at k for predicted links
-    given a matrix of similarity scores and array of hidden links.
-    '''
-
-    n = len(sim_scores)
-    mask = np.zeros((n, n))
-    for row in hidden_links:
-        x = row[0]
-        y = row[1]
-        mask[x][y] = mask[y][x] = 1
-    np.fill_diagonal(mask, 0)
-
-    # sort sim_scores along row axis and obtain indices
-    np.fill_diagonal(sim_scores, 0)
-    sorted_v = np.argsort(-sim_scores, axis=1)
-
-    precision = 0.0
-    for i in range(n):
-        truncation = sorted_v[i][:k]
-        true_labels = np.nonzero(mask[i])[0]
-        intersection = np.intersect1d(truncation, true_labels, assume_unique=True)
-        # print intersection
-        precision_i = float(len(intersection)) / k
-        precision += precision_i
-
-    m = np.count_nonzero(np.any(mask, axis=1))
-    return precision / m
-
-
 def precision(k, sim_scores, graph):
     '''
     Returns the precision at k given original graph.
