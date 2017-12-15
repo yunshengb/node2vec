@@ -1,4 +1,5 @@
 import numpy as np
+import sys
 from scipy.spatial.distance import pdist, squareform
 
 def convert_embed_to_np(emb_file, np_file, ignore_last=False):
@@ -64,38 +65,56 @@ def similarity_scores(emb, method):
     if method == 'euclidean':
         sim_array = 1 / pdist(emb)
         sim_mat = squareform(sim_array)
-        np.fill_diagonal(sim_mat, 1)
-        return sim_mat
-    elif method == 'cosine':
-        dist_array = pdist(emb, 'cosine')
-        dist_mat = squareform(dist_array)
-        sim_mat = 1 - dist_mat
+        np.fill_diagonal(sim_mat, sys.maxint)
         return sim_mat
     elif method=='dot':
         return np.dot(emb, emb.T)
     else:
-        print "ERROR: Did not recognize method name. Use 'euclidean' or 'cosine'."
+        print "ERROR: Did not recognize method name. Use 'euclidean' or 'dot'."
         raise SystemExit
 
 
-def precision(k, sim_scores, graph):
+def precision_alt(k, sim_scores, graph):
     '''
-    Returns the precision at k given original graph.
+    Returns the precision at k for all links in original graph.
+    '''
+    np.fill_diagonal(sim_scores, 0)
+    cond_sim = squareform(sim_scores)
+    sort_cond_sim = np.argsort(-cond_sim)
+    truncation = sort_cond_sim[:k]
+
+    true_labels = np.nonzero(squareform(graph))[0]
+    matches = len(np.intersect1d(truncation, true_labels, assume_unique=True))
+    precision = matches/float(k)
+    print precision
+
+
+def precision(k, sim_scores, graph, degree_range=None):
+    '''
+    Returns the precision at k at each node in original graph
+    and takes the average.
+    If given degree cutoff, calculate precision on nodes
+    with degrees given or more.
     '''
 
     n = len(sim_scores)
+    m = 0 # running count of nodes tested
     # sort sim_scores along row axis and obtain indices
     np.fill_diagonal(sim_scores, 0)
-    sorted_v = np.argsort(-sim_scores, axis=1)
 
     precision = 0.0
     for i in range(n):
-        truncation = sorted_v[i][:k]
-        true_labels = np.nonzero(graph[i])[0]
-        intersection = np.intersect1d(truncation, true_labels, assume_unique=True)
-        precision_i = float(len(intersection)) / k
-        precision += precision_i
+        z = np.count_nonzero(graph[i])
 
-    m = np.count_nonzero(np.any(graph, axis=1))
+        if (degree_range == None and z > 0) or \
+        (degree_range != None and z in degree_range):
+            true_labels = np.nonzero(graph[i])[0]
+            sorted_v = np.argsort(-sim_scores[i])
+            truncation = sorted_v[:k]
+            intersection = np.intersect1d(truncation, true_labels, assume_unique=True)
+            precision_i = float(len(intersection)) / k
+            precision += precision_i
+            m += 1
+
     return precision / m
 

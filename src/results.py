@@ -1,7 +1,8 @@
 import numpy as np
 import argparse
 import os
-from utils import similarity_scores, precision
+from utils import similarity_scores, precision, precision_alt
+
 
 c = os.path.dirname(os.path.realpath(__file__))
 
@@ -29,12 +30,6 @@ def generate_results(args, ignore_last=False):
     and original graph information.
     '''
 
-    emb = np.load('%s/../emb/%s.npy' % (c, args.embedding))
-    if ignore_last:
-        m = len(emb)-1
-        emb = emb[:m]
-
-    sim_scores = similarity_scores(emb, method='dot')
     graph = np.load('%s/../graph/%s_hidden.npy' % (c, args.graph))
     hidden_links = np.load('%s/../graph/%s_testlinks.npy' % (c, args.hidden_links))
 
@@ -44,7 +39,20 @@ def generate_results(args, ignore_last=False):
         graph[x][y] = graph[y][x] = 1
     np.fill_diagonal(graph, 0)
 
-    k_ = [2, 10, 100, 200, 300, 500, 800, 1000, 10000]
+    k_ = [ 2**j for j in range(0,14) ]
+
+    emb = np.load('%s/../emb/%s.npy' % (c, args.embedding))
+
+    if ignore_last:
+        # ignore the last node in embedding and in graph (for arxiv)
+        m = len(emb)-1
+        emb = emb[:m]
+        n = len(graph)
+        graph = np.delete(graph, n-1, 0)
+        graph = np.delete(graph, n-1, 1)
+
+    sim_scores = similarity_scores(emb, method='euclidean')
+
     precisions = [precision(k, sim_scores, graph) for k in k_]
     str_precisions = [("%f" % x) for x in precisions]
     print '\t'.join(str_precisions)

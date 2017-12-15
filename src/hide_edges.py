@@ -11,7 +11,7 @@ from gensim.models import Word2Vec
 
 c = os.path.dirname(os.path.realpath(__file__))
 
-def read_graph(remove_self_loops=False):
+def read_graph():
     '''
     Reads input and builds graph. If the graph is not connected,
     adds a magic node that connects all components
@@ -22,7 +22,6 @@ def read_graph(remove_self_loops=False):
     if args.input_type == "edgelist":
         if not args.weighted:
             G = nx.read_edgelist(filename, nodetype=int, create_using=nx.DiGraph())
-            print '@@@', G
             for edge in G.edges():
                 G[edge[0]][edge[1]]['weight'] = 1
 
@@ -43,11 +42,6 @@ def read_graph(remove_self_loops=False):
         # add edge from magic node to root node
         G.add_edge(magic_node, root)
         G[magic_node][root]['weight'] = 1
-
-    # remove self loops
-    if remove_self_loops:
-        for edge in nx.selfloop_edges(G):
-            G.remove_edge(*edge)
 
     return G
 
@@ -100,11 +94,12 @@ def learn_embeddings(walks):
     print 'An example walk', walks[7]
     model = Word2Vec(walks, size=args.dimensions, window=args.window_size,
                      min_count=0, sg=1, workers=args.workers, iter=args.iter)
-    emb_file = '%s/../emb/%s_iter_%s.emb' % (c, args.input_name, args.iter)
+    emb_file = '%s/../emb/%s_emb_iter_%s_p_%s_q_%s.emb' % \
+        (c, args.input_name, args.iter, args.p, args.q)
     model.wv.save_word2vec_format(emb_file)
     print 'args.window_size', args.window_size
-    convert_embed_to_np(emb_file, '%s/../emb/%s_emb_iter_%s_p_%s_q_%s_walk_%s_win_%s.npy' % \
-        (c, args.input_name, args.iter, args.p, args.q, args.num_walks, args.window_size), ignore_last=True)
+    convert_embed_to_np(emb_file, '%s/../emb/%s_emb_iter_%s_p_%s_q_%s.npy' % \
+        (c, args.input_name, args.iter, args.p, arg.q))
 
     return
 
@@ -114,16 +109,17 @@ def main(args):
     Pipeline for representational learning for all nodes in a graph.
     '''
     print 'Reading graph'
-    graph = read_graph(remove_self_loops=False)
-    nx_G, hidden_edges = graph_with_edges_hidden(graph, 0.01)
-    print 'Creating node2vec graph'
-    G = node2vec.Graph(nx_G, args.directed, args.p, args.q)
-    print 'Preprocessing'
-    G.preprocess_transition_probs()
-    print 'Generating walks'
-    walks = G.simulate_walks(args.num_walks, args.walk_length)
-    print 'Learning embeddings'
-    learn_embeddings(walks)
+    graph = read_graph()
+    nx_G, hidden_edges = graph_with_edges_hidden(graph, 0.1)
+
+    # print 'Creating node2vec graph'
+    # G = node2vec.Graph(nx_G, args.directed, args.p, arg.q)
+    # print 'Preprocessing'
+    # G.preprocess_transition_probs()
+    # print 'Generating walks'
+    # walks = G.simulate_walks(args.num_walks, args.walk_length)
+    # print 'Learning embeddings'
+    # learn_embeddings(walks)
 
 
 if __name__ == "__main__":
