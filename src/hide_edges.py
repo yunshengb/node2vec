@@ -1,15 +1,22 @@
-from utils import convert_embed_to_np
-from main import parse_args
 import argparse
 from math import ceil, floor
 import networkx as nx
 import numpy as np
-import node2vec
 import os
 from random import shuffle
-from gensim.models import Word2Vec
 
 c = os.path.dirname(os.path.realpath(__file__))
+
+def parse_args():
+    '''
+    Parses arguments.
+    '''
+    parser = argparse.ArgumentParser(description="Clean graph and hide edges from graph.")
+
+    parser.add_argument('--input_name', nargs='?', default='arxiv',
+                        help='Adjacency matrix file. File type must be .npy')
+
+    return parser.parse_args()
 
 def read_graph():
     '''
@@ -17,15 +24,24 @@ def read_graph():
     adds a magic node that connects all components
     via the node with the highest degree.
     '''
-    filename = '%s/../graph/%s.%s' % (c, args.input_name, args.input_type)
+    filename = '%s/../graph/%s.edgelist' % (c, args.input_name)
 
-    if args.input_type == "edgelist":
-        if not args.weighted:
-            G = nx.read_edgelist(filename, nodetype=int, create_using=nx.DiGraph())
-            for edge in G.edges():
-                G[edge[0]][edge[1]]['weight'] = 1
+    G = nx.read_edgelist(filename, nodetype=int, create_using=nx.DiGraph())
+    for edge in G.edges():
+        G[edge[0]][edge[1]]['weight'] = 1
 
     G = G.to_undirected()
+
+    # remove edges to self
+    for edge in nx.selfloop_edges(G):
+        G.remove_edge(edge[0],edge[1])
+
+    # remove all isolates
+    for node in nx.isolates(G):
+        G.remove_node(node)
+
+    # relabel nodes
+    G = nx.convert_node_labels_to_integers(G)
 
     if nx.is_connected(G):
         return G
@@ -33,7 +49,7 @@ def read_graph():
     # if the graph is not connected
     # connect the graph using a magic node
     connected_components = nx.connected_components(G)
-    magic_node = nx.number_of_nodes(G)+1
+    magic_node = nx.number_of_nodes(G)
     G.add_node(magic_node)
 
     for comp in connected_components:
@@ -63,7 +79,7 @@ def graph_with_edges_hidden(G, percent_hidden):
     for u in nodes:
         neighbors = list(nx.all_neighbors(G, u))
         n_neighbors = len(neighbors)
-        edges_to_hide = int(ceil(n_neighbors * percent_hidden))
+        edges_to_hide = int(floor(n_neighbors * percent_hidden))
         shuffle(neighbors)
         for v in neighbors:
             if edges_to_hide > 0 and not (u,v) in span_tree_edges and u!=v:
@@ -85,41 +101,13 @@ def graph_with_edges_hidden(G, percent_hidden):
     return G, hidden_edges
 
 
-def learn_embeddings(walks):
-    '''
-    Learn embeddings by optimizing the Skipgram objective using SGD.
-    '''
-    walks = [map(str, walk) for walk in walks]
-    print 'Number of walks', len(walks)
-    print 'An example walk', walks[7]
-    model = Word2Vec(walks, size=args.dimensions, window=args.window_size,
-                     min_count=0, sg=1, workers=args.workers, iter=args.iter)
-    emb_file = '%s/../emb/%s_emb_iter_%s_p_%s_q_%s.emb' % \
-        (c, args.input_name, args.iter, args.p, args.q)
-    model.wv.save_word2vec_format(emb_file)
-    print 'args.window_size', args.window_size
-    convert_embed_to_np(emb_file, '%s/../emb/%s_emb_iter_%s_p_%s_q_%s.npy' % \
-        (c, args.input_name, args.iter, args.p, arg.q))
-
-    return
-
-
 def main(args):
     '''
     Pipeline for representational learning for all nodes in a graph.
     '''
     print 'Reading graph'
     graph = read_graph()
-    nx_G, hidden_edges = graph_with_edges_hidden(graph, 0.1)
-
-    # print 'Creating node2vec graph'
-    # G = node2vec.Graph(nx_G, args.directed, args.p, arg.q)
-    # print 'Preprocessing'
-    # G.preprocess_transition_probs()
-    # print 'Generating walks'
-    # walks = G.simulate_walks(args.num_walks, args.walk_length)
-    # print 'Learning embeddings'
-    # learn_embeddings(walks)
+    nx_G, hidden_edges = graph_with_edges_hidden(graph, 0.16)
 
 
 if __name__ == "__main__":
