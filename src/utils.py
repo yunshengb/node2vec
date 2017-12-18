@@ -86,7 +86,7 @@ def precision_alt(k, sim_scores, graph):
     true_labels = np.nonzero(squareform(graph))[0]
     matches = len(np.intersect1d(truncation, true_labels, assume_unique=True))
     precision = matches/float(k)
-    print precision
+    return precision
 
 
 def precision(k, sim_scores, graph, degree_range=None):
