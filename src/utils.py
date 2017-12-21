@@ -2,16 +2,13 @@ import numpy as np
 import sys
 from scipy.spatial.distance import pdist, squareform
 
-def convert_embed_to_np(emb_file, np_file, ignore_last=False):
+def convert_embed_to_np(emb_file, np_file):
     print 'Convert %s to %s' % (emb_file, np_file)
     with open(emb_file) as f:
         lines = f.readlines()
     t = lines[0].split()
-    s = m = int(t[0])
+    s = int(t[0])
     n = int(t[1])
-
-    if ignore_last:
-        s = m-1
 
     mat = np.zeros((s, n))
     for line in lines[1:]:
@@ -20,7 +17,7 @@ def convert_embed_to_np(emb_file, np_file, ignore_last=False):
 
         li = [ float(x) for x in t[1:] ]
 
-        if r != s or not ignore_last:
+        if r != s:
             mat[r] = li
 
     np.save(np_file, mat)
@@ -63,11 +60,11 @@ def similarity_scores(emb, method):
     given network embedding as numpy array.
     '''
     if method == 'euclidean':
-        sim_array = 1 / pdist(emb)
+        sim_array = -pdist(emb)
         sim_mat = squareform(sim_array)
         np.fill_diagonal(sim_mat, sys.maxint)
         return sim_mat
-    elif method=='dot':
+    elif method == 'dot':
         return np.dot(emb, emb.T)
     else:
         print "ERROR: Did not recognize method name. Use 'euclidean' or 'dot'."
@@ -100,7 +97,7 @@ def precision(k, sim_scores, graph, degree_range=None):
     n = len(sim_scores)
     m = 0 # running count of nodes tested
     # sort sim_scores along row axis and obtain indices
-    np.fill_diagonal(sim_scores, 0)
+    np.fill_diagonal(sim_scores, -sys.maxint - 1)
 
     precision = 0.0
     for i in range(n):
