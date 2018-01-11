@@ -86,12 +86,10 @@ def precision_alt(k, sim_scores, graph):
     return precision
 
 
-def precision(k, sim_scores, graph, degree_range=None):
+def precision(k, sim_scores, graph):
     '''
     Returns the precision at k at each node in original graph
     and takes the average.
-    If given degree cutoff, calculate precision on nodes
-    with degrees given or more.
     '''
 
     n = len(sim_scores)
@@ -103,8 +101,33 @@ def precision(k, sim_scores, graph, degree_range=None):
     for i in range(n):
         z = np.count_nonzero(graph[i])
 
-        if (degree_range == None and z > 0) or \
-        (degree_range != None and z in degree_range):
+        if z > 0:
+            true_labels = np.nonzero(graph[i])[0]
+            sorted_v = np.argsort(-sim_scores[i])
+            truncation = sorted_v[:k]
+            intersection = np.intersect1d(truncation, true_labels, assume_unique=True)
+            precision_i = float(len(intersection)) / k
+            precision += precision_i
+            m += 1
+
+    return precision / m
+
+
+def precision_rm(k, sim_scores, graph, test_mat, n_links):
+    '''
+    Given n_links, calculate the precision on nodes
+    with n_links removed.
+    '''
+
+    n = len(sim_scores)
+    m = 0 # running count of nodes tested
+    # sort sim_scores along row axis and obtain indices
+    np.fill_diagonal(sim_scores, -sys.maxint - 1)
+
+    precision = 0.0
+    for i in range(n):
+        y = np.count_nonzero(test_mat[i])
+        if y in n_links:
             true_labels = np.nonzero(graph[i])[0]
             sorted_v = np.argsort(-sim_scores[i])
             truncation = sorted_v[:k]
