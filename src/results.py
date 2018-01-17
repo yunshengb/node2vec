@@ -33,7 +33,7 @@ def generate_results(args, ignore_last=False):
     graph = np.load('%s/../graph/%s_hidden.npy' % (c, args.graph))
     hidden_links = np.load('%s/../graph/%s_testlinks.npy' % (c, args.hidden_links))
     emb = np.load('%s/../emb/%s.npy' % (c, args.embedding))
-    # file_path = '%s/../emb/%s.mat' % (c,arg.embedding)
+    # file_path = '%s/../emb/%s.mat' % (c, args.embedding)
     # emb = scipy.io.loadmat(file_path)['embedding']
 
     if ignore_last:
@@ -59,12 +59,11 @@ def generate_results(args, ignore_last=False):
     # k_ = [ 2**j for j in range(0,19,2) ] # use for flickr
 
     # uncomment these lines for binned results
-    # ranges = [range(1,2), range(2,3), range(3,4), range(4,5), range(5,15)] # use for arxiv
+    # ranges = [range(1,2), range(2,3), range(3,5), range(5,10), range(10,26)] # use for arxiv
     # ranges = [range(1,2), range(2,4), range(4,8), range(8,19), range(19,839)] # use for blog
     # ranges = [range(1,3), range(3,8), range(8,18), range(18,49), range(49,1178)] # use for flickr
     # for n_links in ranges:
-    # precisions = [precision_rm(k, sim_scores, graph, test_mat, n_links) for k in k_]
-
+        # precisions = [precision_rm(k, sim_scores, graph, test_mat, n_links) for k in k_]
     precisions = [precision(k, sim_scores, graph) for k in k_]
     str_precisions = [("%f" % x) for x in precisions]
     print '\t'.join(str_precisions)
