@@ -3,11 +3,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from math import log
 
-colors = {'DeepWalk': 'gold', 'SDNE': 'lightskyblue', 'NANE-weighted': 'purple', \
+colors = {'DeepWalk': 'gold', 'SDNE': 'lightskyblue', 'NANE': 'purple', \
  'LINE(1st)': 'chocolate', 'LINE(2nd)': 'burlywood', 'LINE(1st+2nd)': 'wheat', \
  'Node2Vec': 'yellowgreen', 'NANE-sym':'magenta', 'NANE-mean':'hotpink', 'NetMF': 'c'}  # change this when re-run
 
-markers = {'DeepWalk': 'x', 'SDNE': 's', 'NANE-weighted': '.', \
+markers = {'DeepWalk': 'x', 'SDNE': 's', 'NANE': '.', \
  'LINE(1st)': 'v', 'LINE(2nd)': '^', 'LINE(1st+2nd)': '<', 'Node2Vec': '*', 'NANE-sym':'H', \
  'NANE-mean':'o', 'NetMF': 'd'}
 
@@ -34,7 +34,7 @@ def plot_precision(filename='arxiv_link_pred'):
             scores = [float(x) for x in ls[1:]]
             label = model
             plt.plot(log_k, scores, \
-                marker=markers[model], color=colors[model], label=label)
+                marker=markers[model], color=colors[model], label=label, markersize=10)
 
     plt.xlabel("k",fontsize=FONTSIZE)
     plt.yticks([a/10.0 for a in range(0,11,2)], fontsize=FONTSIZE)
@@ -104,41 +104,41 @@ def plot_bin_precision(filename='arxiv_binned_new'):
     if filename == 'arxiv_binned_new':
         # bin_names=['removed=1\nn=654','removed=2\nn=287','removed=[3,4]\nn=230',\
         # 'removed=[5,9]\nn=192','removed>=10\nn=90']
-        bin_names = ['654 nodes\neach with\n1 edge\nremoved', '287 nodes\neach with\n2 edges\nremoved', \
-        '230 nodes\neach with\n3-4 edges\nremoved', '192 nodes\neach with\n5-9 edges\nremoved', \
-        '90 nodes\neach with\n>=10 edges\nremoved'
+        bin_names = ['#nodes: 654\navg deg: 6.2\navg whd: 1', '#nodes: 287\navg deg: 10\navg whd: 2', \
+        '#nodes: 230\navg deg: 15\navg whd: 3.4', '#nodes: 192\navg deg: 25\navg whd: 6.4', \
+        '#nodes: 90\navg deg: 45\navg whd: 13'
         ]
-        plt.annotate(bin_names[0],xy=(3,0.75), fontsize=FONTSIZE)
-        plt.annotate(bin_names[1],xy=(18,0.75), fontsize=FONTSIZE)
-        plt.annotate(bin_names[2],xy=(32,0.75), fontsize=FONTSIZE)
-        plt.annotate(bin_names[3],xy=(47,0.75), fontsize=FONTSIZE)
-        plt.annotate(bin_names[4],xy=(62,0.75), fontsize=FONTSIZE)
+        plt.annotate(bin_names[0],xy=(2,0.85), fontsize=FONTSIZE)
+        plt.annotate(bin_names[1],xy=(17,0.85), fontsize=FONTSIZE)
+        plt.annotate(bin_names[2],xy=(31,0.85), fontsize=FONTSIZE)
+        plt.annotate(bin_names[3],xy=(45,0.85), fontsize=FONTSIZE)
+        plt.annotate(bin_names[4],xy=(62,0.85), fontsize=FONTSIZE)
 
     elif filename == 'blog_binned_new':
         # bin_names=['removed=1\nn=1961','removed=[2,3]\nn=2269','removed=[4,7]\nn=2154',\
         # 'removed=[8,18]\nn=2082','removed>=19\nn=1569']
-        bin_names = ['1961 nodes\neach with\n1 edge\nremoved', '2269 nodes\neach with\n2-3 edges\nremoved', \
-        '2154 nodes\neach with\n4-7 edges\nremoved', '2082 nodes\neach with\n8-18 edges\nremoved', \
-        '1569 nodes\neach with\n>=19 edges\nremoved'
+        bin_names = ['#nodes: 1961\navg deg: 5\navg whd: 1', '#nodes: 2269\navg deg: 12\navg whd: 2.4', \
+        '#nodes: 2154\navg deg: 25\navg whd: 5.2', '#nodes: 2082\navg deg: 58\navg whd: 12', \
+        '#nodes: 1569\navg deg: 291\navg whd: 58.8'
         ]
-        plt.annotate(bin_names[0],xy=(3,0.75), fontsize=FONTSIZE)
-        plt.annotate(bin_names[1],xy=(18,0.75), fontsize=FONTSIZE)
-        plt.annotate(bin_names[2],xy=(34,0.75), fontsize=FONTSIZE)
-        plt.annotate(bin_names[3],xy=(49,0.75), fontsize=FONTSIZE)
-        plt.annotate(bin_names[4],xy=(66,0.75), fontsize=FONTSIZE)
+        plt.annotate(bin_names[0],xy=(1.5,0.85), fontsize=FONTSIZE)
+        plt.annotate(bin_names[1],xy=(17,0.85), fontsize=FONTSIZE)
+        plt.annotate(bin_names[2],xy=(32.5,0.85), fontsize=FONTSIZE)
+        plt.annotate(bin_names[3],xy=(47.5,0.85), fontsize=FONTSIZE)
+        plt.annotate(bin_names[4],xy=(64,0.85), fontsize=FONTSIZE)
 
     elif filename == 'flickr_binned_new':
         # bin_names=['removed=[1,2]\nn=17547','removed=[3,7]\nn=18426','removed=[8,17]\nn=16149', \
         # 'removed=[18,48]\nn=16234','removed>49\nn=12139']
-        bin_names = ['17547 nodes\neach with\n1-2 edges\nremoved', '18426 nodes\neach with\n3-7 edges\nremoved', \
-        '16149 nodes\neach with\n8-17 edges\nremoved', '16234 nodes\neach with\n18-48 edges\nremoved', \
-        '12139 nodes\neach with\n>=49 edges\nremoved'
+        bin_names = ['#nodes: 17547\navg deg: 6.3\navg whd: 1.4', '#nodes: 18426\navg deg: 22.6\navg whd: 4.7', \
+        '#nodes: 16149\navg deg: 58.7\navg whd: 11.8', '#nodes: 16234\navg deg: 148\navg whd: 29.3', \
+        '#nodes: 12139\navg deg: 652.6\navg whd: 126.7'
         ]
-        plt.annotate(bin_names[0],xy=(0.7,0.7), fontsize=FONTSIZE)
-        plt.annotate(bin_names[1],xy=(11,0.7), fontsize=FONTSIZE)
-        plt.annotate(bin_names[2],xy=(21,0.7), fontsize=FONTSIZE)
-        plt.annotate(bin_names[3],xy=(31,0.7), fontsize=FONTSIZE)
-        plt.annotate(bin_names[4],xy=(42,0.7), fontsize=FONTSIZE)
+        plt.annotate(bin_names[0],xy=(0.5,0.8), fontsize=FONTSIZE)
+        plt.annotate(bin_names[1],xy=(10,0.8), fontsize=FONTSIZE)
+        plt.annotate(bin_names[2],xy=(20,0.8), fontsize=FONTSIZE)
+        plt.annotate(bin_names[3],xy=(30,0.8), fontsize=FONTSIZE)
+        plt.annotate(bin_names[4],xy=(40,0.8), fontsize=FONTSIZE)
 
     plt.legend(loc='upper right', fontsize=FONTSIZE, bbox_to_anchor=(1.275,1.025))
     plt.xlabel("k",fontsize=FONTSIZE)
@@ -149,7 +149,7 @@ def plot_param_study(filename='blog_param_study'):
     '''
     Plots the precision as a function of alpha for k=1,k=2,k=4.
     '''
-    FONTSIZE = 'xx-large'
+    FONTSIZE = 23
     plt.figure(figsize=(10,6))
 
     alphas = [(y/10.0) for y in range(1,10)]
@@ -166,14 +166,18 @@ def plot_param_study(filename='blog_param_study'):
             i += 1
     k_ = k_.T
 
+    primary_colors = ['red','blue','green']
+    study_markers = ['D','x','s']
     for km in range(3):
         label = 'k=%d' % k[km]
-        plt.plot(alphas, k_[km], label=label, marker='o')
+        color = primary_colors[km]
+        marker = study_markers[km]
+        plt.plot(alphas, k_[km], label=label, color=color, marker=marker, markersize=15)
 
     plt.xticks(fontsize=FONTSIZE)
-    plt.yticks(fontsize=FONTSIZE)
-    plt.xlabel(r'$\alpha$',fontsize=FONTSIZE)
-    plt.legend(loc='best', fontsize=FONTSIZE)
+    plt.yticks(fontsize=25)
+    plt.xlabel(r'$\alpha$',fontsize=35)
+    plt.legend(loc='lower right', fontsize=20)
     plt.grid(linestyle='dashed')
     plt.savefig('%s.eps' % filename, format='eps', dpi=1000, bbox_inches='tight')
 
@@ -181,10 +185,10 @@ def plot_dim_study(filename='blog_dim_study'):
     '''
     Plots the precision as a function of alpha for k=1,k=2,k=4.
     '''
-    FONTSIZE = 'xx-large'
+    FONTSIZE = 23
     plt.figure(figsize=(10,6))
 
-    dimensions = range(100,275,25)
+    dimensions = range(50,275,25)
     log_k = range(0,15)
     k = [ 2**j for j in log_k ]
 
@@ -198,19 +202,25 @@ def plot_dim_study(filename='blog_dim_study'):
             i += 1
     k_ = k_.T
 
+    primary_colors = ['red','blue','green']
+    study_markers = ['D','x','s']
     for km in range(3):
         label = 'k=%d' % k[km]
-        plt.plot(dimensions, k_[km], label=label, marker='o')
+        color = primary_colors[km]
+        marker = study_markers[km]
+        plt.plot(dimensions, k_[km], label=label, color=color, marker=marker, markersize=15)
 
     plt.xticks(dimensions, fontsize=FONTSIZE)
-    plt.yticks(fontsize=FONTSIZE)
-    plt.xlabel("Dimensions",fontsize=FONTSIZE)
-    plt.legend(loc='best', fontsize=FONTSIZE, bbox_to_anchor=(1.275,1.025))
+    plt.yticks(fontsize=25)
+    plt.xlabel("#dimensions",fontsize=35)
+    plt.legend(loc='lower right', fontsize=20)
     plt.grid(linestyle='dashed')
     plt.savefig('%s.eps' % filename, format='eps', dpi=1000, bbox_inches='tight')
 
 if __name__ == "__main__":
     # plot_param_study()
-    plot_dim_study()
+    # plot_dim_study()
     # plot_precision('flickr_link_pred')
-    # plot_bin_precision('flickr_binned_new')
+    plot_bin_precision('arxiv_binned_new')
+    plot_bin_precision('blog_binned_new')
+    plot_bin_precision('flickr_binned_new')
