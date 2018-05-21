@@ -3,13 +3,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from math import log
 
-colors = {'DeepWalk': 'gold', 'SDNE': 'lightskyblue', 'NANE': 'purple', \
- 'LINE(1st)': 'chocolate', 'LINE(2nd)': 'burlywood', 'LINE(1st+2nd)': 'wheat', \
- 'Node2Vec': 'yellowgreen', 'NANE-sym':'magenta', 'NANE-mean':'hotpink', 'NetMF': 'c'}  # change this when re-run
+colors = {'DeepWalk': 'peru', 'SDNE': 'green', 'NANE': 'red', \
+ 'LINE(1st)': 'burlywood', 'LINE(2nd)': 'chocolate', 'LINE(1st+2nd)': 'brown', \
+ 'Node2Vec': 'orange', 'GCN':'cyan', 'GraphSAGE':'lightskyblue', 'NetMF': 'darkorange'}  # change this when re-run
 
-markers = {'DeepWalk': 'x', 'SDNE': 's', 'NANE': '.', \
- 'LINE(1st)': 'v', 'LINE(2nd)': '^', 'LINE(1st+2nd)': '<', 'Node2Vec': '*', 'NANE-sym':'H', \
- 'NANE-mean':'o', 'NetMF': 'd'}
+markers = {'DeepWalk': 'x', 'SDNE': 's', 'NANE': 'd', \
+ 'LINE(1st)': 'v', 'LINE(2nd)': '^', 'LINE(1st+2nd)': '<', 'Node2Vec': '*', 'GCN':'H', \
+ 'GraphSAGE':'D', 'NetMF': 'o'}
 
 def plot_precision(filename='arxiv_link_pred'):
     '''
@@ -52,8 +52,11 @@ def plot_bin_precision(filename='arxiv_binned_new'):
     '''
     Plots the precision as a function across in five bins.
     '''
-    FONTSIZE = 25
-    plt.figure(figsize=(20,8))
+    FONTSIZE = 23
+    if 'blog' in filename:
+        plt.figure(figsize=(21,8))
+    else:
+        plt.figure(figsize=(21, 8))
 
     k = [ 2**j for j in range(0,14) ]
     if filename == 'blog_binned_new':
@@ -71,7 +74,7 @@ def plot_bin_precision(filename='arxiv_binned_new'):
         bin_id = 0
         bin = data['Bin 0']
         for line in f:
-            if line == '\r\n':
+            if line == '\r\n' or line == '\n':
                 bin_id += 1
                 bin = data['Bin {}'.format(bin_id)]
             else:
@@ -121,11 +124,11 @@ def plot_bin_precision(filename='arxiv_binned_new'):
         '#nodes: 2154\navg deg: 25\navg whd: 5.2', '#nodes: 2082\navg deg: 58\navg whd: 12', \
         '#nodes: 1569\navg deg: 291\navg whd: 58.8'
         ]
-        plt.annotate(bin_names[0],xy=(1.5,0.85), fontsize=FONTSIZE)
-        plt.annotate(bin_names[1],xy=(17,0.85), fontsize=FONTSIZE)
-        plt.annotate(bin_names[2],xy=(32.5,0.85), fontsize=FONTSIZE)
-        plt.annotate(bin_names[3],xy=(47.5,0.85), fontsize=FONTSIZE)
-        plt.annotate(bin_names[4],xy=(64,0.85), fontsize=FONTSIZE)
+        plt.annotate(bin_names[0],xy=(1.5,0.8), fontsize=FONTSIZE)
+        plt.annotate(bin_names[1],xy=(17,0.8), fontsize=FONTSIZE)
+        plt.annotate(bin_names[2],xy=(32.5,0.8), fontsize=FONTSIZE)
+        plt.annotate(bin_names[3],xy=(47.5,0.8), fontsize=FONTSIZE)
+        plt.annotate(bin_names[4],xy=(64,0.8), fontsize=FONTSIZE)
 
     elif filename == 'flickr_binned_new':
         # bin_names=['removed=[1,2]\nn=17547','removed=[3,7]\nn=18426','removed=[8,17]\nn=16149', \
@@ -140,7 +143,7 @@ def plot_bin_precision(filename='arxiv_binned_new'):
         plt.annotate(bin_names[3],xy=(30,0.8), fontsize=FONTSIZE)
         plt.annotate(bin_names[4],xy=(40,0.8), fontsize=FONTSIZE)
 
-    plt.legend(loc='upper right', fontsize=FONTSIZE, bbox_to_anchor=(1.275,1.025))
+    plt.legend(loc='lower center', fontsize=FONTSIZE, bbox_to_anchor=(0.5, -0.27), ncol=5)
     plt.xlabel("k",fontsize=FONTSIZE)
     plt.grid(linestyle='dashed')
     plt.savefig('%s.eps' % filename, format='eps', dpi=1000, bbox_inches='tight')
@@ -220,7 +223,9 @@ def plot_dim_study(filename='blog_dim_study'):
 if __name__ == "__main__":
     # plot_param_study()
     # plot_dim_study()
-    # plot_precision('flickr_link_pred')
+    plot_precision('arxiv_link_pred')
+    plot_precision('blog_link_pred')
+    plot_precision('flickr_link_pred')
     plot_bin_precision('arxiv_binned_new')
     plot_bin_precision('blog_binned_new')
     plot_bin_precision('flickr_binned_new')

@@ -17,3 +17,5 @@ build
 .emd
 *.edgelist
 *.pkl
+*.csv
+*.eps
