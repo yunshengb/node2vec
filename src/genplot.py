@@ -54,7 +54,7 @@ def plot_bin_precision(filename='arxiv_binned_new'):
     '''
     FONTSIZE = 23
     if 'blog' in filename:
-        plt.figure(figsize=(19,8)) # changed figsize from (21, 8) to (19, 8).
+        plt.figure(figsize=(19.5, 8)) # changed figsize from (21, 8) to (19.5, 8).
     else:
         plt.figure(figsize=(21, 8))
 
