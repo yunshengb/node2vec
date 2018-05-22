@@ -54,7 +54,7 @@ def plot_bin_precision(filename='arxiv_binned_new'):
     '''
     FONTSIZE = 23
     if 'blog' in filename:
-        plt.figure(figsize=(19.5, 8)) # changed figsize from (21, 8) to (19.5, 8).
+        plt.figure(figsize=(21, 8))
     else:
         plt.figure(figsize=(21, 8))
 
@@ -84,6 +84,8 @@ def plot_bin_precision(filename='arxiv_binned_new'):
                 xids = range(bin_id*num_k, bin_id*num_k+len(scores))
 
                 label = model if bin_id == 0 else None
+                
+                plt.margins(0.01,0.025)
                 plt.plot(xids, scores, color=colors[model], marker=markers[model], label=label)
                 bin[model] = scores
 
